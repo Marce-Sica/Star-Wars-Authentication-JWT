@@ -11,23 +11,19 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from api.extensions import bcrypt, jwt
 
-from api.extensions import jwt, bcrypt
 #from models import Person
 
 ENV = os.getenv("FLASK_ENV")
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
-# Setup JWT
 app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_APP_KEY")
 jwt.init_app(app)
 
-#Setup Bcrypt
 bcrypt.init_app(app)
-
-app.url_map.strict_slashes = False
-
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -51,9 +47,6 @@ setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
-
-
-
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
